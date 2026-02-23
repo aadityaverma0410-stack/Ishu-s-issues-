@@ -7,8 +7,7 @@
     <style>
         :root {
             --vintage-red: #b32d2d;
-            --cream: #e8d8c3;
-            --overlay: rgba(0, 0, 0, 0.65);
+            --overlay: rgba(0, 0, 0, 0.7);
         }
 
         body, html {
@@ -17,10 +16,22 @@
             height: 100%;
             font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
-            background-color: #000;
+            background: black;
         }
 
-        /* Screen Transitions */
+        /* Fixed Background for all screens */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(var(--overlay), var(--overlay)), url('main_bg.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+
         .screen {
             display: none;
             flex-direction: column;
@@ -28,290 +39,226 @@
             justify-content: center;
             height: 100vh;
             width: 100vw;
-            background-size: cover;
-            background-position: center;
             position: absolute;
-            transition: opacity 0.5s ease;
+            color: white;
+            text-align: center;
         }
 
         .active { display: flex; }
 
-        /* Screen 1: Startup */
-        #screen1 {
-            background-image: linear-gradient(var(--overlay), var(--overlay)), url('main_bg.jpg');
-        }
-
-        .heart-container {
-            position: relative;
-            margin-bottom: 40px;
-        }
-
-        .highlight-img {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            border: 6px solid white;
-            object-fit: cover;
-            box-shadow: 0 0 25px rgba(255,255,255,0.6);
-        }
-
-        .heart {
+        /* Flower System */
+        .garden {
             position: absolute;
-            font-size: 2rem;
-            animation: float 2.5s infinite ease-in-out;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            pointer-events: none;
+            z-index: 5;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-15px) scale(1.15); }
+        .flower {
+            font-size: 2rem;
+            transition: all 1.5s ease-in-out;
+            transform-origin: bottom;
+            transform: scale(0);
+        }
+
+        /* Growth Stages */
+        .stage-1 .flower { transform: scale(0.5) translateY(20px); filter: grayscale(100%); } /* Sprouts */
+        .stage-2 .flower { transform: scale(1) translateY(10px); filter: grayscale(50%); }   /* Stalks */
+        .stage-3 .flower { transform: scale(1.8) translateY(0); filter: grayscale(0%); }   /* Bloom */
+
+        /* Screen 1 Styles */
+        .heart-container { position: relative; margin-bottom: 20px; }
+        .highlight-img {
+            width: 200px; height: 200px;
+            border-radius: 50%; border: 5px solid white;
+            object-fit: cover;
         }
 
         /* Screen 2: Tic-Tac-Toe */
-        #screen2 {
-            background: #121212;
-            color: #fff;
-        }
-
         .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 12px;
-            margin: 20px 0;
+            display: grid; grid-template-columns: repeat(3, 90px);
+            gap: 10px; margin: 20px 0;
         }
-
         .cell {
-            width: 100px;
-            height: 100px;
-            background: #2a2a2a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            cursor: pointer;
-            border-radius: 10px;
-            border: 1px solid #444;
+            width: 90px; height: 90px;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; cursor: pointer; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         #apology-msg {
             display: none;
-            padding: 25px;
-            max-width: 85%;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            animation: fadeIn 1.5s forwards;
-        }
-
-        .emoji-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
+            padding: 30px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
+            max-width: 80%;
+            border: 1px solid var(--vintage-red);
+            animation: fadeIn 1s forwards;
+            position: absolute;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 10rem;
-            z-index: 1000;
-            display: none;
+            z-index: 20;
         }
 
-        /* Screen 3: The Choice */
-        #screen3 {
-            background: var(--cream);
-            color: var(--vintage-red);
-            text-align: center;
-            padding: 20px;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
+        /* Buttons */
         button {
-            padding: 15px 35px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px;
-            border: none;
-            background: var(--vintage-red);
-            color: white;
-            transition: all 0.2s ease;
+            padding: 15px 30px; border-radius: 50px; border: none;
+            background: var(--vintage-red); color: white;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
             font-family: inherit;
         }
 
-        #no-btn { background: #555; }
+        #no-btn { background: #444; }
 
-        /* General UI Elements */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .fall {
-            position: fixed;
-            top: -50px;
-            pointer-events: none;
-            animation: fall linear forwards;
-            font-size: 2.5rem;
-            z-index: 999;
+            position: fixed; top: -50px; pointer-events: none;
+            animation: fall linear forwards; font-size: 2rem;
         }
-
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
     </style>
 </head>
-<body>
+<body class="stage-1">
+
+    <div class="bg-container"></div>
+
+    <div class="garden">
+        <div class="flower">🌱</div><div class="flower">🌱</div><div class="flower">🌱</div>
+        <div class="flower">🌱</div><div class="flower">🌱</div><div class="flower">🌱</div>
+    </div>
 
     <div id="screen1" class="screen active">
         <div class="heart-container">
-            <div class="heart" style="top:-30px; left:-30px;">❤️</div>
-            <div class="heart" style="top:-30px; right:-30px;">💖</div>
-            <div class="heart" style="bottom:-20px; left:40%;">💗</div>
-            <img src="center_photo.jpg" class="highlight-img" alt="Didi">
+            <img src="center_photo.jpg" class="highlight-img">
         </div>
-        <button onclick="startApp()">Apology Button 😿</button>
+        <button onclick="nav(2)">Apology Button 😿</button>
     </div>
 
     <div id="screen2" class="screen">
-        <h2 id="game-status">Win Tic-Tac-Toe to see my message!</h2>
+        <h2 id="status">Win Tic-Tac-Toe to forgive me!</h2>
         <div class="grid" id="board">
-            <div class="cell" onclick="handleMove(0)"></div>
-            <div class="cell" onclick="handleMove(1)"></div>
-            <div class="cell" onclick="handleMove(2)"></div>
-            <div class="cell" onclick="handleMove(3)"></div>
-            <div class="cell" onclick="handleMove(4)"></div>
-            <div class="cell" onclick="handleMove(5)"></div>
-            <div class="cell" onclick="handleMove(6)"></div>
-            <div class="cell" onclick="handleMove(7)"></div>
-            <div class="cell" onclick="handleMove(8)"></div>
+            <div class="cell" onclick="play(0)"></div><div class="cell" onclick="play(1)"></div><div class="cell" onclick="play(2)"></div>
+            <div class="cell" onclick="play(3)"></div><div class="cell" onclick="play(4)"></div><div class="cell" onclick="play(5)"></div>
+            <div class="cell" onclick="play(6)"></div><div class="cell" onclick="play(7)"></div><div class="cell" onclick="play(8)"></div>
         </div>
-
-        <button id="reset-btn" onclick="resetGame()" style="background: #333; margin-bottom: 10px;">Reset Game 🔄</button>
+        <button id="reset" onclick="reset()">Reset Game 🔄</button>
 
         <div id="apology-msg">
             didii I’m really sorry for how I’ve been behaving lately. I know I keep ragebaiting you and acting immature. 
             You deserve better from me I promise I’ll be more serious now and respect your feelings every time 
             Please forgive mee😿😿💔💔💔
             <br><br>
-            <button onclick="navTo(3)">Next ➡️</button>
+            <button onclick="nav(3)">Continue ➡️</button>
         </div>
-
-        <div class="emoji-overlay" id="winEmoji">😿🙏🏻</div>
     </div>
 
     <div id="screen3" class="screen">
-        <h1 id="final-header">Will you forgive me?</h1>
-        <div class="btn-group">
-            <button onclick="accept()">apology accepted?</button>
-            <button id="no-btn" onclick="reject()">noo apology accepted</button>
+        <h1 id="header">Will you forgive me?</h1>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            <button onclick="accept()">Apology accepted?</button>
+            <button id="no-btn" onclick="reject()">Noo apology accepted</button>
         </div>
     </div>
 
-    <audio id="bgMusic" loop>
-        <source src="song1.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="music" loop><source src="song1.mp3" type="audio/mpeg"></audio>
 
     <script>
-        let gameState = ["", "", "", "", "", "", "", "", ""];
-        let isActive = true;
+        let board = ["","","","","","","","",""];
+        let active = true;
         let scale = 1.0;
 
-        function startApp() {
-            navTo(2);
-            document.getElementById('bgMusic').play().catch(e => console.log("Music blocked"));
+        function nav(s) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById('screen'+s).classList.add('active');
+            document.body.className = 'stage-' + s;
+            
+            const flowers = document.querySelectorAll('.flower');
+            flowers.forEach((f, i) => {
+                if(s === 2) f.innerText = i % 2 === 0 ? "🌻" : "🌷";
+                if(s === 3) f.innerText = i % 2 === 0 ? "🌻" : "🌷";
+            });
+
+            if(s === 2) document.getElementById('music').play();
         }
 
-        function navTo(screenNum) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen' + screenNum).classList.add('active');
-        }
-
-        function handleMove(idx) {
-            if (gameState[idx] === "" && isActive) {
-                gameState[idx] = "X";
-                document.getElementsByClassName('cell')[idx].innerText = "X";
-                if (!checkWin("X") && isActive) setTimeout(botMove, 400);
+        function play(i) {
+            if(board[i] === "" && active) {
+                board[i] = "X";
+                document.getElementsByClassName('cell')[i].innerText = "X";
+                if(!checkWin("X") && active) setTimeout(bot, 500);
             }
         }
 
-        // Extremely bad AI: Just picks any random empty spot
-        function botMove() {
-            let empty = gameState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-            if (empty.length > 0 && isActive) {
-                let move = empty[Math.floor(Math.random() * empty.length)];
-                gameState[move] = "O";
+        function bot() {
+            // Intelligent Bot: Win > Block > Random
+            let move = findBestMove("O") || findBestMove("X") || randomMove();
+            if(move !== null) {
+                board[move] = "O";
                 document.getElementsByClassName('cell')[move].innerText = "O";
                 checkWin("O");
             }
         }
 
-        function checkWin(player) {
+        function findBestMove(p) {
             const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            for (let w of wins) {
-                if (gameState[w[0]] === player && gameState[w[1]] === player && gameState[w[2]] === player) {
-                    if (player === "X") {
-                        showApology();
-                    } else {
-                        document.getElementById('game-status').innerText = "Oops, I won! Try again. 😅";
-                        isActive = false;
-                    }
-                    return true;
+            for(let w of wins) {
+                let count = w.filter(i => board[i] === p).length;
+                let empty = w.filter(i => board[i] === "");
+                if(count === 2 && empty.length === 1) return empty[0];
+            }
+            return null;
+        }
+
+        function randomMove() {
+            let empty = board.map((v,i) => v === "" ? i : null).filter(v => v !== null);
+            return empty.length > 0 ? empty[Math.floor(Math.random()*empty.length)] : null;
+        }
+
+        function checkWin(p) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            if(wins.some(w => w.every(i => board[i] === p))) {
+                active = false;
+                if(p === "X") {
+                    document.getElementById('board').style.display = 'none';
+                    document.getElementById('reset').style.display = 'none';
+                    document.getElementById('status').style.display = 'none';
+                    document.getElementById('apology-msg').style.display = 'block';
+                } else {
+                    document.getElementById('status').innerText = "I won! No mercy. Try again? 😼";
                 }
+                return true;
             }
-            if (!gameState.includes("") && isActive) {
-                document.getElementById('game-status').innerText = "It's a draw! Try again. 🤝";
-                isActive = false;
-            }
+            if(!board.includes("")) { document.getElementById('status').innerText = "Draw! Try harder. 🙄"; active = false; return true; }
             return false;
         }
 
-        function showApology() {
-            isActive = false;
-            document.getElementById('board').style.display = 'none';
-            document.getElementById('reset-btn').style.display = 'none';
-            document.getElementById('game-status').style.display = 'none';
-            
-            const winBox = document.getElementById('winEmoji');
-            winBox.style.display = 'block';
-            setTimeout(() => {
-                winBox.style.display = 'none';
-                document.getElementById('apology-msg').style.display = 'block';
-            }, 1000);
-        }
-
-        function resetGame() {
-            gameState = ["", "", "", "", "", "", "", "", ""];
-            isActive = true;
-            document.getElementById('game-status').innerText = "Win Tic-Tac-Toe to see my message!";
+        function reset() {
+            board = ["","","","","","","","",""]; active = true;
+            document.getElementById('status').innerText = "Win Tic-Tac-Toe to forgive me!";
             Array.from(document.getElementsByClassName('cell')).forEach(c => c.innerText = "");
         }
 
         function accept() {
-            document.getElementById('final-header').innerText = "thankyou bihari 😭🙏🏻";
-            document.querySelector('.btn-group').style.display = 'none';
+            document.getElementById('header').innerText = "thankyou bihari 😭🙏🏻";
+            document.querySelector('#screen3 div').style.display = 'none';
         }
 
         function reject() {
-            document.getElementById('final-header').innerText = "Plssssss PLSSS NAA";
-            scale -= 0.15;
-            if (scale < 0.2) scale = 0.2;
+            document.getElementById('header').innerText = "Plssssss PLSSS NAA";
+            scale -= 0.15; if(scale < 0.2) scale = 0.2;
             document.getElementById('no-btn').style.transform = `scale(${scale})`;
-            
-            // Shower emojis
-            for (let i = 0; i < 12; i++) {
+            for(let i=0; i<15; i++) {
                 setTimeout(() => {
-                    const e = document.createElement("div");
-                    e.classList.add("fall");
+                    const e = document.createElement("div"); e.className = "fall";
                     e.innerText = Math.random() > 0.5 ? "😔" : "💔";
-                    e.style.left = Math.random() * 100 + "vw";
-                    e.style.animationDuration = (Math.random() * 2 + 2) + "s";
-                    document.body.appendChild(e);
-                    setTimeout(() => e.remove(), 3000);
-                }, i * 150);
+                    e.style.left = Math.random()*100+"vw"; e.style.animationDuration = (Math.random()*2+2)+"s";
+                    document.body.appendChild(e); setTimeout(() => e.remove(), 3000);
+                }, i*100);
             }
         }
     </script>
