@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Didi</title>
+    <style>
+        :root {
+            --vintage-red: #b32d2d;
+            --cream: #e8d8c3;
+            --overlay: rgba(0, 0, 0, 0.6);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Common Screen Styles */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background-size: cover;
+            background-position: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .active { display: flex; }
+
+        /* Screen 1: Startup */
+        #screen1 {
+            background-image: linear-gradient(var(--overlay), var(--overlay)), url('main_bg.jpg');
+        }
+
+        .heart-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .highlight-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 5px solid white;
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.2); }
+        }
+
+        /* Screen 2: Game */
+        #screen2 {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        #apology-msg {
+            display: none;
+            padding: 20px;
+            max-width: 80%;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            margin-top: 20px;
+            animation: fadeIn 2s forwards;
+        }
+
+        .big-emoji-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Screen 3: Decision */
+        #screen3 {
+            background: var(--cream);
+            color: var(--vintage-red);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 50px;
+            border: none;
+            background: var(--vintage-red);
+            color: white;
+            transition: 0.3s;
+        }
+
+        #no-btn { background: #666; }
+
+        /* Effects */
+        .fall {
+            position: fixed;
+            top: -50px;
+            pointer-events: none;
+            animation: fall linear forwards;
+            font-size: 2rem;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="screen1" class="screen active">
+        <div class="heart-container">
+            <div class="floating-heart" style="top:-20px; left:-20px;">❤️</div>
+            <div class="floating-heart" style="top:-20px; right:-20px;">💖</div>
+            <div class="floating-heart" style="bottom:-10px; left:50%;">💗</div>
+            <img src="center_photo.jpg" class="highlight-img" alt="You">
+        </div>
+        <button onclick="goToScreen2()">Enter Apology 😿</button>
+    </div>
+
+    <div id="screen2" class="screen">
+        <h3>Win Tic-Tac-Toe to read my message!</h3>
+        <div class="grid" id="board">
+            <div class="cell" onclick="makeMove(0)"></div>
+            <div class="cell" onclick="makeMove(1)"></div>
+            <div class="cell" onclick="makeMove(2)"></div>
+            <div class="cell" onclick="makeMove(3)"></div>
+            <div class="cell" onclick="makeMove(4)"></div>
+            <div class="cell" onclick="makeMove(5)"></div>
+            <div class="cell" onclick="makeMove(6)"></div>
+            <div class="cell" onclick="makeMove(7)"></div>
+            <div class="cell" onclick="makeMove(8)"></div>
+        </div>
+        
+        <div id="apology-msg">
+            didii I’m really sorry for how I’ve been behaving lately. I know I keep ragebaiting you and acting immature. 
+            You deserve better from me I promise I’ll be more serious now and respect your feelings every time 
+            Please forgive mee😿😿💔💔💔
+            <br><br>
+            <button onclick="goToScreen3()">Next ➡️</button>
+        </div>
+
+        <div class="big-emoji-overlay" id="emojiOverlay">😿🙏🏻</div>
+    </div>
+
+    <div id="screen3" class="screen">
+        <h2 id="final-text">Will you forgive me?</h2>
+        <div class="btn-group">
+            <button onclick="acceptApology()">Apology accepted?</button>
+            <button id="no-btn" onclick="rejectApology()">Noo apology accepted</button>
+        </div>
+    </div>
+
+    <audio id="song1" loop>
+        <source src="song1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
+        let noScale = 1.0;
+
+        function goToScreen2() {
+            document.getElementById('screen1').classList.remove('active');
+            document.getElementById('screen2').classList.add('active');
+            document.getElementById('song1').play();
+        }
+
+        function makeMove(index) {
+            if (board[index] === "" && gameActive) {
+                board[index] = "X";
+                document.getElementsByClassName('cell')[index].innerText = "X";
+                checkWinner();
+                if (gameActive) setTimeout(computerMove, 500);
+            }
+        }
+
+        function computerMove() {
+            let empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+            if (empty.length > 0) {
+                let move = empty[Math.floor(Math.random() * empty.length)];
+                board[move] = "O";
+                document.getElementsByClassName('cell')[move].innerText = "O";
+                checkWinner();
+            }
+        }
+
+        function checkWinner() {
+            const winPatterns = [
+                [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]
+            ];
+            for (let p of winPatterns) {
+                if (board[p[0]] === "X" && board[p[1]] === "X" && board[p[2]] === "X") {
+                    handleWin();
+                    return;
+                }
+            }
+        }
+
+        function handleWin() {
+            gameActive = false;
+            document.getElementById('board').style.display = 'none';
+            const overlay = document.getElementById('emojiOverlay');
+            overlay.style.display = 'block';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('apology-msg').style.display = 'block';
+            }, 1000);
+        }
+
+        function goToScreen3() {
+            document.getElementById('screen2').classList.remove('active');
+            document.getElementById('screen3').classList.add('active');
+        }
+
+        function acceptApology() {
+            document.getElementById('final-text').innerText = "Thankyou bihari 😭🙏🏻";
+            document.querySelector('.btn-group').style.display = 'none';
+        }
+
+        function rejectApology() {
+            document.getElementById('final-text').innerText = "Plssssss PLSSS NAA";
+            noScale -= 0.2;
+            if (noScale < 0.3) noScale = 0.3;
+            document.getElementById('no-btn').style.transform = `scale(${noScale})`;
+            
+            // Shower emojis
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const el = document.createElement("div");
+                    el.classList.add("fall");
+                    el.innerHTML = Math.random() > 0.5 ? "😔" : "💔";
+                    el.style.left = Math.random() * 100 + "vw";
+                    el.style.animationDuration = (Math.random() * 2 + 2) + "s";
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 3000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
